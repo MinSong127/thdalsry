@@ -1,0 +1,59 @@
+
+
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
+public class CreateAccountPage extends Application {
+    private AccountStorage accountstorage = new AccountStorage();
+    private PasswordHelper passwordHelper = new PasswordHelper();
+
+    public void start(Stage primaryStage) {
+        primaryStage.setTitle("create Account");
+
+        Label usernameLabel = new Label("Username:");
+        TextField usernameField = new TextField();
+
+        Label passwordLabel = new Label("Password:");
+        PasswordField passwordField1 = new PasswordField();
+
+        Label confirmPasswordLabel = new Label("Confirm Password:");
+        PasswordField passwordField2 = new PasswordField();
+
+        Button createAccountButton = new Button("Create Account");
+        Label messageLabel = new Label();
+        
+        createAccountButton.setOnAction(event -> {
+            String username= usernameField.getText();
+            char[] password = passwordField1.getText().toCharArray();
+            char[] confirmPassword = passwordField2.getText().toCharArray();
+
+            if (!passwordHelper.validatePassword(password)) {
+                messageLabel.setText("Password is not valid.");
+            } else if (!passwordHelper.passwordMatch(password,confirmPassword)) {
+                messageLabel.setText("Passwords do not match.");
+            } else if (accountstorage.storeUser(username, password)) {
+                messageLabel.setText("Account created!");
+                new LoginPage().start(new Stage());
+                primaryStage.close();
+            } else {
+                messageLabel.setText("Username already exists.");
+            }
+            });
+
+            VBox layout = new VBox(10);
+            layout.getChildren().addAll(usernameLabel, usernameField, passwordLabel, passwordField1, confirmPasswordLabel, passwordField2, createAccountButton, messageLabel);
+
+            Scene scene = new Scene(layout, 300, 250);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+            
+        }
+        public static void main(String[] args) {
+            launch(args);
+
+    }
+
+}
